@@ -1,0 +1,490 @@
+{
+	"info": {
+		"_postman_id": "4bee1a07-ee85-4640-a79f-7322f7f4dc86",
+		"name": "Solicitar cotação - Seguradora",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24683068"
+	},
+	"item": [
+		{
+			"name": "Token de autenticação",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"if (pm.response) {\r",
+							"    pm.test(\"Status code é 200 ou 201\", function () {\r",
+							"        pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Token está presente no JSON\", function () {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"access_token\");\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Token não está vazio\", function () {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData.access_token).to.not.be.empty;\r",
+							"    });\r",
+							"} else {\r",
+							"    console.log(\"Nenhuma resposta recebida da API.\");\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "e46f0d14-a4c2-4922-81af-acaffa44d495",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/oauth/v3/access-token",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"oauth",
+						"v3",
+						"access-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Classe Válida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code \r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"//Valida se a solicitação retorna o valor do premio \r",
+							"pm.test(\"Response contains grossPremium\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"grossPremium\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "879e1e00-1da4-45c0-a59e-be011d60bc46",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"1.0\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"propertyUseType\": \"Usual\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"2\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Classe Invalida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code \r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"//Valida se a solicitação retorna o valor do premio \r",
+							"pm.test(\"Response contains grossPremium\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"grossPremium\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "879e1e00-1da4-45c0-a59e-be011d60bc46",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"1.0\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"propertyUseType\": \"Usual\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"2\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Valor limite valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code \r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verifica se há pagamentos e se installments estão entre 1 e 12\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    // Verifica se 'payments' existe e é um array\r",
+							" \r",
+							"pm.test(\"Installments está entre 1 e 12\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const installmentsStr = jsonData.riskObjects?.[0]?.paymentConditions?.installments;\r",
+							"\r",
+							"    // Verifica se o campo existe\r",
+							"    pm.expect(installmentsStr, \"Campo installments não encontrado\").to.not.be.undefined;\r",
+							"\r",
+							"    // Converte para número\r",
+							"    const installments = parseInt(installmentsStr, 10);\r",
+							"\r",
+							"    // Verifica se está entre 1 e 12\r",
+							"    pm.expect(installments, \"Installments fora do intervalo\").to.be.within(1, 12);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "304fd3e3-4e70-4570-8f59-c9a00a937344",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"propertyUseType\": \"Usual\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"3\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Valor limite invalido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code \r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"//Valida se a solicitação retorna o valor do premio \r",
+							"pm.test(\"Response contains grossPremium\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"grossPremium\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "879e1e00-1da4-45c0-a59e-be011d60bc46",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"1.0\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"propertyUseType\": \"Usual\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"2\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Tabela de decisão (recebe um valor negativo)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code 400, o campo propertyUseType não foi enviado \r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "3cc3f056-380e-4b45-90ae-37459029a00c",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"1.0\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"2\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cotação - Análise Combinatória (recebe um valor em texto)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Valida status code 400, o campo propertyUseType não foi enviado \r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "afb52c78-26e2-48ec-8c35-1f5ab777c965",
+						"type": "text"
+					},
+					{
+						"key": "access_token",
+						"value": "3cc3f056-380e-4b45-90ae-37459029a00c",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"policyPeriodStart\": \"2021-01-01\",\r\n  \"policyPeriodEnd\": \"2021-12-31\",\r\n  \"discountPercentage\": \"0\",\r\n  \"commercialLoadingFee\": \"0\",\r\n  \"commissionedAgents\": [\r\n    {\r\n      \"documentNumber\": \"11111111111111\",\r\n      \"role\": \"Broker\",\r\n      \"lead\": \"true\",\r\n      \"commissionPercentage\": \"0.15\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"22222222222222\",\r\n      \"role\": \"PolicyOwner\",\r\n      \"lead\": \"false\"\r\n    }\r\n  ],\r\n  \"participants\": [\r\n    {\r\n      \"documentNumber\": \"33333333333\",\r\n      \"role\": \"Beneficiary\",\r\n      \"participationPercentage\": \"1.0\",\r\n      \"type\": \"Corporate\"\r\n    },\r\n    {\r\n      \"documentNumber\": \"44444444444\",\r\n      \"role\": \"Insured\",\r\n      \"isPayer\": \"true\",\r\n      \"type\": \"Corporate\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      }\r\n    }\r\n  ],\r\n  \"riskObjects\": [\r\n    {\r\n      \"type\": \"Property\",\r\n      \"coverages\": [\r\n        {\r\n          \"key\": \"basica\",\r\n          \"insuredAmount\": \"12800.00\",\r\n          \"lmi\": \"\"\r\n        }\r\n      ],\r\n      \"insuredOwner\": \"true\",\r\n      \"propertyType\": \"Apartment\",\r\n      \"constructionType\": \"Brick\",\r\n      \"address\": {\r\n        \"street\": \"Av. Raja Gab\\u00e1glia\",\r\n        \"number\": \"1143\",\r\n        \"district\": \"Luxemburgo\",\r\n        \"city\": \"Belo Horizonte\",\r\n        \"state\": \"MG\",\r\n        \"zipCode\": \"30380403\",\r\n        \"complement\": \"20\\u00ba andar\",\r\n        \"country\": \"BRA\",\r\n        \"type\": \"Residential\"\r\n      },\r\n      \"paymentConditions\": {\r\n        \"paymentType\": \"Boleto\",\r\n        \"installments\": \"2\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api-sandbox.pottencial.com.br/insurance/v1/residencial/quotes",
+					"protocol": "https",
+					"host": [
+						"api-sandbox",
+						"pottencial",
+						"com",
+						"br"
+					],
+					"path": [
+						"insurance",
+						"v1",
+						"residencial",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
